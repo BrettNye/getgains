@@ -4,75 +4,75 @@
     require_once('./user/user.php');
 
     $user = new User;
+
+    $data = $user->getWeightLog($_SESSION['user_id'], 0);
+    $weight = $data[0];
+    $dates = $data[1];
 ?>
-
-<style>
-/* The Modal (background) */
-.modal {
-  display: none; /* Hidden by default */
-  position: fixed; /* Stay in place */
-  z-index: 1; /* Sit on top */
-  left: 0;
-  top: 0;
-  width: 100%; /* Full width */
-  height: 100%; /* Full height */
-  overflow: auto; /* Enable scroll if needed */
-  background-color: rgb(0,0,0); /* Fallback color */
-  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
-}
-
-/* Modal Content/Box */
-.modal-content {
-  background-color: #fefefe;
-  margin: 15% auto; /* 15% from the top and centered */
-  padding: 20px;
-  border: 1px solid #888;
-  width: 80%; /* Could be more or less, depending on screen size */
-}
-
-/* The Close Button */
-.close {
-  color: #aaa;
-  float: right;
-  font-size: 28px;
-  font-weight: bold;
-}
-
-.close:hover,
-.close:focus {
-  color: black;
-  text-decoration: none;
-  cursor: pointer;
-}
-</style>
-
+<script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.js"></script>
 <div>
-    <div>
-        <div>
-        <h2>Body Weight</h2>
-        <a id="weight-modal">+</a>
+    <div class="d-flex justify-content-center mt-5">
+        <div class="weight d-flex flex-column">
+          <div class="header-container d-flex justify-content-between align-items-center bg-dark p-0">
+            <p class="header m-0 p-0 ml-2 text-light">Body Weight</p>
+            <a id="weight-modal" class="text-light mr-2">+</a>
+          </div>
+          <p class="ml-2">
         <?php
-          $LBS = number_format($user->getCurrentWeight($_SESSION['user_id'])/16, 2, '.', '');
+          $LBS = number_format($user->getCurrentWeight($_SESSION['user_id']), 1, '.', '');
           
-          echo "<p>" . $LBS . " LBS</p>"
+          echo "Current: " . $LBS . " LBS"
         ?>
+          </p>
+          <canvas id="myChart" width="100" height="100"></canvas>
         </div>
-    </div>
-</div>
+      </div>
+  </div>
 
 <!-- The Modal -->
 <div id="userWeightModal" class="modal">
 
   <!-- Modal content -->
-  <div class="modal-content">
-    <form id="weight-form" method="POST" action="../getgains/functional_pages/update_weight.php">
-        Pounds: <input type="number" name="pounds"/>
-        ounces: <input type="number" name="ounces"/>
-        <button type="submit">Log</button>
+  <div class="modal-content d-flex flex-column justify-content-center align-items-center w-25">
+    <div class="w-75 d-flex justify-content-center">
+    <p class="modal-header m-0 p-0 ml-2">Log Body Weight</p>
+    </div>
+    <span class="close mr-2">&times;</span>
+    <form id="weight-form" class="d-flex flex-column align-items-center mt-4" method="POST" action="../getgains/functional_pages/update_weight.php">
+        <input class=" w-50" type="number" step=".1" name="weight" Placeholder="225.2 LBS"/>
+        <button class="btn btn-dark w-75 mt-3" type="submit">Log</button>
     </form>
+    <button>1W</button>
+    <button>1M</button>
+    <button>6M</button>
+    <button>1Y</button>
   </div>
 
 </div>
+<script>
+    var ctx = document.getElementById('myChart');
+    var myChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: <?php echo $dates; ?>,
+            datasets: [{
+                label: 'Weight in LBS',
+                data: <?php echo $weight; ?>,
+                borderColor: [
+                    'rgba(255, 99, 132, 1)',
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(255, 206, 86, 1)',
+                    'rgba(75, 192, 192, 1)',
+                    'rgba(153, 102, 255, 1)',
+                    'rgba(255, 159, 64, 1)'
+                ],
+                borderWidth: 1,
+                fill: false
+            }]
+        }
+    });
+  </script>
+
 <script>
 // Get the modal
 var modal = document.getElementById("userWeightModal");

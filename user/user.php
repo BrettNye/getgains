@@ -1,5 +1,5 @@
 <?php
-require_once('../getgains/user/userDAO.php');
+require_once('userDAO.php');
 
 class User implements \JsonSerializable {
   // Properties
@@ -142,6 +142,11 @@ class User implements \JsonSerializable {
   function getCurrentWeight($user_id){
     $userDAO = new userDAO;
     return $userDAO->getUserWeight($user_id);
+  }
+
+  function getWeightLog($user_id, $type){
+    $userDAO = new userDAO;
+    return $userDAO->getWeightLogData($user_id, $type);
   }
 }
 ?>

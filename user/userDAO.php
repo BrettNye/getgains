@@ -71,8 +71,7 @@ class UserDAO{
     }
 
     function getUserWeight($user_id){
-
-      require_once('../getgains/utilities/connection.php');
+      include('../getgains/utilities/connection.php');
 
       $sql = "SELECT current_user_weight FROM user WHERE user_id = " . $user_id;
       
@@ -88,6 +87,34 @@ class UserDAO{
       }
       $conn->close();
       return $current_user_weight;
+    }
+
+    function getWeightLogData($user_id, $time){
+      require_once('../getgains/utilities/connection.php');
+      switch($time){
+        case 0: $sql = "SELECT weight, weight_log_date FROM weight_log WHERE user_id = " . $user_id . " ORDER BY weight_log_date DESC LIMIT 7";
+          break;
+        case 1: $sql = "SELECT weight, weight_log_date FROM weight_log WHERE user_id = " . $user_id . " ORDER BY weight_log_date DESC LIMIT 30";
+          break;
+        case 2: $sql = "SELECT weight, weight_log_date FROM weight_log WHERE user_id = " . $user_id . " ORDER BY weight_log_date DESC LIMIT 183";
+          break;
+        case 3: $sql = "SELECT weight, weight_log_date FROM weight_log WHERE user_id = " . $user_id . " ORDER BY weight_log_date DESC LIMIT 365";
+      }
+
+      $result = $conn->query($sql);
+      $i = 0;
+
+      if ($result->num_rows > 0) {
+          while($row = $result->fetch_assoc()) {
+            $weights[] = $row["weight"];
+            $dates[] = date("m/d/y", strtotime($row["weight_log_date"]));
+      }
+      }
+      else {
+          echo "0 results";
+      }
+      $conn->close();
+      return array(json_encode(array_reverse($weights)), json_encode(array_reverse($dates)));
     }
     }
 ?>
