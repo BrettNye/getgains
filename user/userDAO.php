@@ -1,5 +1,5 @@
 <?php
-
+date_default_timezone_set('America/Denver');
 class UserDAO{
 
     function createUser($user){
@@ -59,7 +59,8 @@ class UserDAO{
 
       $sql = "INSERT INTO weight_log (user_id, weight, current_weight, weight_log_date)
       VALUES
-      ( " . $user_id . ", " . $weight . ", true, SYSDATE())";
+      ( " . $user_id . ", " . $weight . ", true, SYSDATE())
+      ON DUPLICATE KEY UPDATE weight = $weight";
 
       if ($conn->query($sql) === TRUE) {
         echo "weight log created";
@@ -89,8 +90,47 @@ class UserDAO{
       return $current_user_weight;
     }
 
+    function getUserCalories($user_id){
+      include('../getgains/utilities/connection.php');
+
+      $sql = "SELECT calorie FROM calorie_log WHERE user_id =". $user_id . " ORDER BY calorie_log_date DESC LIMIT 1";
+
+      $result = $conn->query($sql);
+
+      if ($result->num_rows > 0) {
+        while($row = $result->fetch_assoc()) {
+          $calories = $row["calorie"];
+        }
+      }
+      else {
+          echo "0 results";
+      }
+      $conn->close();
+      return $calories;
+    }
+
+    function getUserWater($user_id){
+      include('../getgains/utilities/connection.php');
+
+      $sql = "SELECT water FROM water_log WHERE user_id = " . $user_id . " ORDER BY water_log_date DESC LIMIT 1";
+
+      $result = $conn->query($sql);
+
+      if ($result->num_rows > 0) {
+        while($row = $result->fetch_assoc()) {
+          $water = $row["water"];
+        }
+      }
+      else {
+          echo "0 results";
+      }
+      $conn->close();
+      return $water;
+    }
+
     function getWeightLogData($user_id, $time){
       require_once('../getgains/utilities/connection.php');
+
       switch($time){
         case 0: $sql = "SELECT weight, weight_log_date FROM weight_log WHERE user_id = " . $user_id . " ORDER BY weight_log_date DESC LIMIT 7";
           break;
@@ -102,7 +142,7 @@ class UserDAO{
       }
 
       $result = $conn->query($sql);
-      $i = 0;
+    
 
       if ($result->num_rows > 0) {
           while($row = $result->fetch_assoc()) {
@@ -116,5 +156,95 @@ class UserDAO{
       $conn->close();
       return array(json_encode(array_reverse($weights)), json_encode(array_reverse($dates)));
     }
+
+    function getCalorieLogData($user_id, $time){
+      include('../getgains/utilities/connection.php');
+
+      switch($time){
+        case 0: $sql = "SELECT calorie, calorie_log_date FROM calorie_log WHERE user_id = " . $user_id . " ORDER BY calorie_log_date DESC LIMIT 7";
+          break;
+        case 1: $sql = "SELECT calorie, calorie_log_date FROM calorie_log WHERE user_id = " . $user_id . " ORDER BY calorie_log_date DESC LIMIT 30";
+          break;
+        case 2: $sql = "SELECT calorie, calorie_log_date FROM calorie_log WHERE user_id = " . $user_id . " ORDER BY calorie_log_date DESC LIMIT 183";
+          break;
+        case 3: $sql = "SELECT calorie, calorie_log_date FROM calorie_log WHERE user_id = " . $user_id . " ORDER BY calorie_log_date DESC LIMIT 365";
+      }
+
+      $result = $conn->query($sql);
+
+      if ($result->num_rows > 0) {
+          while($row = $result->fetch_assoc()) {
+            $calories[] = $row["calorie"];
+            $dates[] = date("m/d/y", strtotime($row["calorie_log_date"]));
+      }
+      }
+      else {
+          echo "0 results";
+      }
+      $conn->close();
+      return array(json_encode(array_reverse($calories)), json_encode(array_reverse($dates)));
     }
+
+    function addUserCalories($user_id, $calories){
+      require_once('../utilities/connection.php');
+
+      $sql = "INSERT INTO calorie_log (user_id, calorie, calorie_log_date)
+      VALUES
+      ( " . $user_id . ", " . $calories . ", SYSDATE())
+      ON DUPLICATE KEY UPDATE calorie = calorie + " . $calories;
+
+      if ($conn->query($sql) === TRUE) {
+        echo "calorie log created";
+      } else {
+        echo "Error: " . $sql . "<br>" . $conn->error;
+      }
+                
+      $conn->close();
+    }
+
+    function addUserWater($user_id, $water){
+      require_once('../utilities/connection.php');
+
+      $sql = "INSERT INTO water_log (user_id, water, water_log_date)
+      VALUES
+      (". $user_id . ", " . $water . ", SYSDATE())
+      ON DUPLICATE KEY UPDATE water = water + " . $water;
+
+      if ($conn->query($sql) === TRUE) {
+        echo "water log created";
+      } else {
+        echo "Error: " . $sql . "<br>" . $conn->error;
+      }
+                
+      $conn->close();
+    }
+
+    function getWaterLogData($user_id, $time){
+      include('../getgains/utilities/connection.php');
+
+      switch($time){
+        case 0: $sql = "SELECT water, water_log_date FROM water_log WHERE user_id = " . $user_id . " ORDER BY water_log_date DESC LIMIT 7";
+          break;
+        case 1: $sql = "SELECT water, water_log_date FROM water_log WHERE user_id = " . $user_id . " ORDER BY water_log_date DESC LIMIT 30";
+          break;
+        case 2: $sql = "SELECT water, water_log_date FROM water_log WHERE user_id = " . $user_id . " ORDER BY water_log_date DESC LIMIT 183";
+          break;
+        case 3: $sql = "SELECT water, water_log_date FROM water_log WHERE user_id = " . $user_id . " ORDER BY water_log_date DESC LIMIT 365";
+      }
+
+      $result = $conn->query($sql);
+
+      if ($result->num_rows > 0) {
+          while($row = $result->fetch_assoc()) {
+            $water[] = $row["water"];
+            $dates[] = date("m/d/y", strtotime($row["water_log_date"]));
+      }
+      }
+      else {
+          echo "0 results";
+      }
+      $conn->close();
+      return array(json_encode(array_reverse($water)), json_encode(array_reverse($dates)));
+    }
+}
 ?>

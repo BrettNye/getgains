@@ -144,9 +144,29 @@ class User implements \JsonSerializable {
     return $userDAO->getUserWeight($user_id);
   }
 
+  function getCurrentCalories($user_id){
+    $userDAO = new userDAO;
+    return $userDAO->getUserCalories($user_id);
+  }
+
+  function getCurrentWater($user_id){
+    $userDAO = new userDAO;
+    return $userDAO->getUserWater($user_id);
+  }
+
   function getWeightLog($user_id, $type){
     $userDAO = new userDAO;
     return $userDAO->getWeightLogData($user_id, $type);
+  }
+
+  function getCalorieLog($user_id, $type){
+    $userDAO = new userDAO;
+    return $userDAO->getCalorieLogData($user_id, $type);
+  }
+
+  function getWaterLog($user_id, $type){
+    $userDAO = new userDAO;
+    return $userDAO->getWaterLogData($user_id, $type);
   }
 }
 ?>

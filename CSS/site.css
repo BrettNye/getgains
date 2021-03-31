@@ -53,8 +53,17 @@
 }
 
 /******USER_STATS STYLING******/
+#chart-container{
+  padding-right: 8%;
+  padding-left: 8%;
+}
+
 .weight{
-  width: 30%;
+  width: 25%;
+}
+
+.weightChart, .waterChart, .calorieChart{
+  margin-bottom: 15px;
 }
 
 .header-container{
@@ -66,7 +75,7 @@
   font-size: 22pt;
 }
 
-#weight-modal{
+.modal-add{
   font-size: 20pt;
   height: 50px;
 }
@@ -78,4 +87,16 @@
 
   #login{
     width: 30%;
+  }
+
+  #graph-btn{
+    height:50px;
+  }
+
+  .graph-btn-item{
+    font-size: 16pt;
+  }
+
+  .graph-btn-item:hover{
+    text-decoration: none;
   }

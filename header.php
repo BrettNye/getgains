@@ -18,7 +18,7 @@
                 <li class="nav-item"><a class="nav-link text-light" href="#">Meal Planning</a></li>
                 <li class="nav-item"><a class="nav-link text-light" href="#">Track Food</a></li>
                 <li class="nav-item"><a class="nav-link text-light" href="#">Exercise</a></li>
-                <li class="nav-item"><a class="nav-link text-light" href="user_stats.php">My Stats</a></li>
+                <li class="nav-item"><a class="nav-link text-light" href="user_stats.php?weight=0&calorie=0&water=0">My Stats</a></li>
                 <li class="nav-item"><a class="nav-link text-light" href="#">My Account</a></li>
                 <li class="nav-item"><a class="nav-link text-light" href="#">Timers</a></li>
             </ul>
